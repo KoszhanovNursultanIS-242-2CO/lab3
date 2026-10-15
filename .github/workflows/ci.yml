@@ -22,7 +22,7 @@ jobs:
       - name: Wait for web service
         run: |
           sleep 10
-          curl -f http://localhost:5000 || exit 1
+          curl -f http://localhost:5000 || (docker compose logs web && exit 1)
 
       - name: Run tests
         env:
