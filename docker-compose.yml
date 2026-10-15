@@ -6,12 +6,12 @@ services:
       - "5000:5000"
 
   selenium-hub:
-    image: selenium/hub:4.12.0-20240430
+    image: selenium/hub:latest
     ports:
       - "4444:4444"
 
   chrome:
-    image: selenium/node-chrome:4.12.0-20240430
+    image: selenium/node-chrome:latest
     depends_on:
       - selenium-hub
     environment:
