@@ -5,8 +5,10 @@ app = Flask(__name__)
 DB = "users.db"
 
 def init_db():
-    conn = sqlite3.connect(DB)
+    conn = sqlite3.connect(DB, timeout=10.0)
     cursor = conn.cursor()
+    # Включаем WAL режим для поддержки параллельных запросов
+    cursor.execute("PRAGMA journal_mode=WAL;")
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS users (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -19,7 +21,7 @@ def init_db():
 
 @app.route("/")
 def index():
-    conn = sqlite3.connect(DB)
+    conn = sqlite3.connect(DB, timeout=10.0)
     cursor = conn.cursor()
     cursor.execute("SELECT id, name, email FROM users")
     users = cursor.fetchall()
@@ -31,7 +33,7 @@ def register():
     if request.method == "POST":
         name = request.form["name"]
         email = request.form["email"]
-        conn = sqlite3.connect(DB)
+        conn = sqlite3.connect(DB, timeout=10.0)
         cursor = conn.cursor()
         cursor.execute("INSERT INTO users (name, email) VALUES (?, ?)", (name, email))
         conn.commit()
@@ -39,9 +41,10 @@ def register():
         return redirect(url_for("index"))
     return render_template("register.html")
 
+# API
 @app.route("/api/users", methods=["GET"])
 def api_get_users():
-    conn = sqlite3.connect(DB)
+    conn = sqlite3.connect(DB, timeout=10.0)
     cursor = conn.cursor()
     cursor.execute("SELECT id, name, email FROM users")
     users = cursor.fetchall()
@@ -51,7 +54,7 @@ def api_get_users():
 @app.route("/api/users", methods=["POST"])
 def api_create_user():
     data = request.json
-    conn = sqlite3.connect(DB)
+    conn = sqlite3.connect(DB, timeout=10.0)
     cursor = conn.cursor()
     cursor.execute("INSERT INTO users (name, email) VALUES (?, ?)", (data["name"], data["email"]))
     conn.commit()
@@ -61,7 +64,7 @@ def api_create_user():
 
 @app.route("/api/users/<int:user_id>", methods=["DELETE"])
 def api_delete_user(user_id):
-    conn = sqlite3.connect(DB)
+    conn = sqlite3.connect(DB, timeout=10.0)
     cursor = conn.cursor()
     cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
     conn.commit()
