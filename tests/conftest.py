@@ -1,11 +1,12 @@
+import os
 import pytest
 import sqlite3
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from logger import get_logger
 
-BASE_URL = "http://web:5000"
-HUB_URL = "http://selenium-hub:4444/wd/hub"
+BASE_URL = os.getenv("BASE_URL", "http://web:5000")
+HUB_URL = os.getenv("HUB_URL", "http://selenium-hub:4444/wd/hub")
 
 @pytest.fixture(scope="session")
 def logger():
@@ -15,6 +16,8 @@ def logger():
 def driver():
     options = Options()
     options.add_argument("--headless=new")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
     driver = webdriver.Remote(
         command_executor=HUB_URL,
         options=options

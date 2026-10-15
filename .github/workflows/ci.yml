@@ -25,6 +25,9 @@ jobs:
           curl -f http://localhost:5000 || exit 1
 
       - name: Run tests
+        env:
+          BASE_URL: "http://localhost:5000"
+          HUB_URL: "http://localhost:4444/wd/hub"
         run: |
           pytest --html=report.html --self-contained-html -q -n auto
 
