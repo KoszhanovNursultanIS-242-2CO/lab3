@@ -39,7 +39,7 @@ jobs:
           BASE_URL: "http://localhost:5000"
           HUB_URL: "http://localhost:4444/wd/hub"
         run: |
-          pytest --html=report.html --self-contained-html -q -n auto
+          python -m pytest --html=report.html --self-contained-html -q -n auto
 
       - name: Upload report
         uses: actions/upload-artifact@v4
