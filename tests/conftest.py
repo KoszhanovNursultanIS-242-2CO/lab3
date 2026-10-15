@@ -5,8 +5,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from logger import get_logger
 
-BASE_URL = os.getenv("BASE_URL", "http://web:5000")
-HUB_URL = os.getenv("HUB_URL", "http://selenium-hub:4444/wd/hub")
+BASE_URL = os.getenv("BASE_URL", "http://localhost:5000")
+HUB_URL = os.getenv("HUB_URL", "http://localhost:4444/wd/hub")
 
 @pytest.fixture(scope="session")
 def logger():
@@ -29,6 +29,15 @@ def driver():
 def api_url():
     return BASE_URL + "/api/users"
 
-@pytest.fixture
-def db_path():
-    return "users.db"
+@pytest.fixture(autouse=True)
+def clean_db():
+    # Очищаем таблицу перед каждым тестом, чтобы не было дубликатов email
+    if os.path.exists("users.db"):
+        try:
+            conn = sqlite3.connect("users.db", timeout=10.0)
+            cursor = conn.cursor()
+            cursor.execute("DELETE FROM users")
+            conn.commit()
+            conn.close()
+        except sqlite3.OperationalError:
+            pass

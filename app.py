@@ -23,6 +23,9 @@ def init_db():
     conn.commit()
     conn.close()
 
+# Вызываем сразу при старте приложения, чтобы таблица была всегда
+init_db()
+
 @app.route("/")
 def index():
     conn = get_db_connection()
